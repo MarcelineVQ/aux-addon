@@ -3,6 +3,7 @@ module 'aux'
 local T = require 'T'
 local post = require 'aux.tabs.post'
 local gui = require 'aux.gui'
+local purchase_summary = require 'aux.util.purchase_summary'
 
 M.print = T.vararg-function(arg)
 	DEFAULT_CHAT_FRAME:AddMessage(LIGHTYELLOW_FONT_COLOR_CODE .. '<aux> ' .. join(map(arg, tostring), ' '))
@@ -68,6 +69,7 @@ function handle.LOAD()
         post_duration = post.DURATION_24,
 		post_stack = true,
 	undercut = true,
+        purchase_summary = true,
         items = {},
         item_ids = {},
         auctionable_items = {},
@@ -162,7 +164,13 @@ do
 		if money >= amount then
 			locked = true
 			local send_signal, signal_received = signal()
+			local name, texture, count, _, _, _, _, _, buyout_price = GetAuctionItemInfo(type, index)
 			thread(when, signal_received, function()
+				-- Track all (buyout) purchases after successful bid
+				if name and amount > 0 and amount >= buyout_price then
+					purchase_summary.add_purchase(name, texture, count, amount)
+					purchase_summary.update_display()
+				end
 				do (on_success or pass)() end
 				locked = false
 			end)

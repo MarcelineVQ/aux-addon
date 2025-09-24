@@ -69,6 +69,7 @@ The most advanced auction house addOn for the 1.12 client with some features mor
 **/aux sharing** (Enable or disable auction data sharing as described above)<br/>
 **/aux theme** (Switch between the two themes)<br/>
 **/aux purchase summary** (Toggles the purchase summary window that tracks gold spending)<br/>
+**/aux post stack** (Toggles stack size saving per item in the post tab)<br/>
 ### Tooltip
 **/aux tooltip value**<br/>
 **/aux tooltip daily**<br/>

@@ -69,7 +69,6 @@ function handle.LOAD()
         post_duration = post.DURATION_24,
 		post_stack = true,
 	undercut = true,
-        purchase_summary = true,
         items = {},
         item_ids = {},
         auctionable_items = {},
@@ -77,6 +76,7 @@ function handle.LOAD()
         merchant_sell = {},
 		sharing = true,
         theme = 'blizzard',
+        purchase_summary = true,
     })
     do
         local key = format('%s|%s', GetCVar'realmName', UnitName'player')

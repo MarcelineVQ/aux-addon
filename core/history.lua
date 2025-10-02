@@ -24,6 +24,10 @@ local value_cache = {}
 
 function aux.handle.LOAD2()
 	data = aux.faction_data.history
+	local _, name = GetChannelName("LFT")
+	if aux.account_data.sharing and not name then
+		JoinChannelByName("LFT")
+	end
 end
 
 do
@@ -59,47 +63,27 @@ function write_record(item_key, record)
 	end
 end
 
---pfUI.api.strsplit
-local function AuxAddon_strsplit(delimiter, subject)
-	if not subject then return nil end
-	local delimiter, fields = delimiter or ":", {}
-	local pattern = string.format("([^%s]+)", delimiter)
-	string.gsub(subject, pattern, function(c) fields[table.getn(fields)+1] = c end)
-	return unpack(fields)
-  end
+local data_sharer = CreateFrame("Frame", "aux_data_sharer")
+data_sharer:RegisterEvent("CHAT_MSG_CHANNEL")
 
---taken from Atlasloot Update announcing code
+data_sharer:SetScript("OnEvent", function()
+	if not aux.account_data.sharing then return end
+	if arg2 == UnitName("player") then return end
+	if strupper(arg9) ~= "LFT" then return end
 
-AUX_data_sharer = CreateFrame("Frame")
-AUX_data_sharer:RegisterEvent("CHAT_MSG_CHANNEL")
-AUXplayerName = UnitName("player")
+	local _, _, item_key, munit_buyout_price = strfind(arg1 or "", "^AuxData,(.*),(.*)$") -- using , as a seperator because item_key contains a :
 
+	if not item_key then return end
 
-AUX_data_sharer:SetScript("OnEvent", function()
-	if event == "CHAT_MSG_CHANNEL" and aux.account_data.sharing == true then
-		local _,_,source = string.find(arg4,"(%d+)%.")
-		if source then
-			_,name = GetChannelName(source)
-		end
-		if name == "LFT" then
-			local msg, item_key, munit_buyout_price = AuxAddon_strsplit(",", arg1) --using , as a seperator because item_key contains a :
-			if msg == "AuxData" then
-				if arg2 ~= AUXplayerName then
-					local unit_buyout_price = tonumber (munit_buyout_price)
-					if unit_buyout_price and item_key then
-					--print("received data:" .. msg .. "," .. item_key .. "," .. unit_buyout_price); --for testing (print comes from PFUI)
-						local item_record = read_record(item_key)
-						if unit_buyout_price > 0 and unit_buyout_price < (item_record.daily_min_buyout or aux.huge) then
-							item_record.daily_min_buyout = unit_buyout_price
-							write_record(item_key, item_record)
-							--print("wrote data"); --for testing (print comes from PFUI)
-						end
-					end
-				end
-			end
-		end
+	local unit_buyout_price = tonumber(munit_buyout_price) or 0
+	local item_record = read_record(item_key)
+
+	if unit_buyout_price > 0 and unit_buyout_price < (item_record.daily_min_buyout or aux.huge) then
+		item_record.daily_min_buyout = unit_buyout_price
+		write_record(item_key, item_record)
 	end
-  end)
+	-- print(arg1)
+end)
 
 function M.process_auction(auction_record, pages)
 	local item_record = read_record(auction_record.item_key)
@@ -110,7 +94,7 @@ function M.process_auction(auction_record, pages)
 		write_record(auction_record.item_key, item_record)
 		--AuxAddon:SendCommMessage("GUILD", item_key, unit_buyout_price) relies on acecomm
 		if aux.account_data.sharing == true then
-			if pages < 15 then --to avoid sharing data when people do searches without a keyword "full scans"
+			if (tonumber(pages) or 0) < 15 then --to avoid sharing data when people do searches without a keyword "full scans"
 				if GetChannelName("LFT") ~= 0 then
 					ChatThrottleLib:SendChatMessage("BULK", nil, "AuxData," .. item_key .."," .. unit_buyout_price , "CHANNEL", nil, GetChannelName("LFT")) --ChatThrottleLib fixed for turtle by Candor https://github.com/trumpetx/ChatLootBidder/blob/master/ChatThrottleLib.lua
 				  	--print("sent")

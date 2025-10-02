@@ -38,6 +38,7 @@ The most advanced auction house addOn for the 1.12 client with some features mor
 * Sorting across all scanned pages.
 * Quick buying from any page without rescanning everything.
 * Real time mode which continuously scans the last page.
+* Purchase summary window to track gold spent during a session.
 
 ### Post
 * Automatic assembling and posting of multiple stacks.
@@ -68,6 +69,7 @@ The most advanced auction house addOn for the 1.12 client with some features mor
 **/aux crafting cost** (Toggles the crafting price information)<br/>
 **/aux sharing** (Enable or disable auction data sharing as described above)<br/>
 **/aux theme** (Switch between the two themes)<br/>
+**/aux purchase summary** (Toggles the purchase summary window that tracks gold spending)<br/>
 ### Tooltip
 **/aux tooltip value**<br/>
 **/aux tooltip daily**<br/>
@@ -166,6 +168,9 @@ This will scan for usable recipes and exclude those with "libram" in the tooltip
 
 **armor/cloth/50/intellect/stamina**<br/>
 This will scan the auction house for cloth armor which has a requirement of at least lvl 50 as well both intellect and stamina stats.
+
+**felcloth/exact/stack/5**<br/>
+This will search for auctions of felcloth with exactly 5 items in the stack.
 
 ## Historical Value
 

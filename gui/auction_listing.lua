@@ -11,6 +11,13 @@ local tooltip = require 'aux.core.tooltip'
 
 local price_per_unit = false
 
+-- Initialize from account data when available
+aux.handle.LOAD = function()
+    if aux.account_data and aux.account_data.price_per_unit ~= nil then
+        price_per_unit = aux.account_data.price_per_unit
+    end
+end
+
 local HEAD_HEIGHT = 27
 local HEAD_SPACE = 2
 
@@ -546,6 +553,7 @@ local methods = {
 
         if button == 'RightButton' and rt.headCells[this.columnIndex].info.isPrice then
             price_per_unit = not price_per_unit
+            aux.account_data.price_per_unit = price_per_unit
             for _, cell in rt.headCells do
                 if cell.info.isPrice then
                     cell:SetText(cell.info.title[price_per_unit and 1 or 2])

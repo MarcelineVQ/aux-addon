@@ -155,7 +155,7 @@ function game_tooltip_hooks:SetInboxItem(index)
     local name, _, quantity = GetInboxItem(index)
     local id = name and info.item_id(name)
     if id then
-        local _, itemstring, quality =  (id)
+        local _, itemstring, quality = GetItemInfo(id)
 		if quality and itemstring then
 			local hex = aux.select(4, GetItemQualityColor(tonumber(quality)))
 			local link = hex ..  '|H' .. itemstring .. '|h[' .. name .. ']|h' .. FONT_COLOR_CODE_CLOSE
